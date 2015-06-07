@@ -96,8 +96,7 @@ def unsubscribe():
         email_query = Email.all()
         for ema in email_query:
             if ema.email == e.email:
-                address_k = db.Key.from_path(ema.email)
-                db.delete(address_k)
+                ema.delete()
                 return 'Email '+ema.email+' removido!'
         em = request.form.get('email')
     if request.method == 'GET':
@@ -107,8 +106,7 @@ def unsubscribe():
         email_query = Email.all()
         for ema in email_query:
             if ema.email == e.email:
-                address_k = db.Key.from_path(ema.email)
-                db.delete(address_k)
+                ema.delete()
                 return 'Email '+ema.email+' removido!'
         em = request.args.get('email')
     return 'Email '+em+' nao encontrado!'
