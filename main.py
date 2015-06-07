@@ -2,7 +2,7 @@ from flask import Flask, request
 from PeixeModel import Peixe
 from EmailModel import Email
 from google.appengine.api import mail
-from google.appengine.ext import db
+import datetime
 
 app = Flask(__name__)
 
@@ -111,6 +111,35 @@ def unsubscribe():
         em = request.args.get('email')
     return 'Email '+em+' nao encontrado!'
 
+@app.route('/relatorio', methods=['GET', 'POST'])
+def relatorio():
+    peixe = Peixe.all()
+    string_p_bad = 0
+    string_p_good = 0
+
+    for p in peixe:
+        if (p.temperatura > 28 or p.temperatura < 22) or (p.ph > 7 or p.ph < 6) or (p.dureza < 65 or p.dureza > 80) or (p.alcalinidade < 80 or p.alcalinidade > 100) or (p.nivelo2 < 6 or p.nivelo2 > 10) or (p.transparencia < 30 or p.transparencia > 40):
+            string_p_bad += 1
+        elif (p.temperatura < 28 and p.temperatura > 22) and (p.ph < 7 and p.ph > 6) and (p.dureza > 65 and p.dureza < 80) and (p.alcalinidade > 80 and p.alcalinidade < 100) and (p.nivelo2 > 6 and p.nivelo2 < 10) and (p.transparencia > 30 and p.transparencia < 40):
+            string_p_good += 1
+    return 'Leituras Boas: ' + str(string_p_good) + "\n" + 'Leituras Ruins: ' + str(string_p_bad)
+
+@app.route('/relatorio/<dia>/<mes>/<ano>', methods=['GET', 'POST'])
+def relatoriodata(dia, mes, ano):
+    data = datetime.datetime(int(ano),int(mes),int(dia),0,0,0)
+    peixe = Peixe.all()
+    peixe.filter('data >=', data)
+    data += datetime.timedelta(days=1)
+    peixe.filter('data <', data)
+    string_p_bad = 0
+    string_p_good = 0
+
+    for p in peixe:
+        if (p.temperatura > 28 or p.temperatura < 22) or (p.ph > 7 or p.ph < 6) or (p.dureza < 65 or p.dureza > 80) or (p.alcalinidade < 80 or p.alcalinidade > 100) or (p.nivelo2 < 6 or p.nivelo2 > 10) or (p.transparencia < 30 or p.transparencia > 40):
+            string_p_bad += 1
+        elif (p.temperatura < 28 and p.temperatura > 22) and (p.ph < 7 and p.ph > 6) and (p.dureza > 65 and p.dureza < 80) and (p.alcalinidade > 80 and p.alcalinidade < 100) and (p.nivelo2 > 6 and p.nivelo2 < 10) and (p.transparencia > 30 and p.transparencia < 40):
+            string_p_good += 1
+    return 'Leituras Boas: ' + str(string_p_good) + "\n" + 'Leituras Ruins: ' + str(string_p_bad)
 
 if __name__ == '__main__':
     app.run()
