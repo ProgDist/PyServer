@@ -10,3 +10,4 @@ class Peixe(db.Model):
     nivelo2 = db.IntegerProperty(required=True)
     transparencia = db.IntegerProperty(required=True)
     data = db.DateTimeProperty(auto_now_add=True)
+
