@@ -122,7 +122,7 @@ def relatorio():
             string_p_bad += 1
         elif (p.temperatura < 28 and p.temperatura > 22) and (p.ph < 7 and p.ph > 6) and (p.dureza > 65 and p.dureza < 80) and (p.alcalinidade > 80 and p.alcalinidade < 100) and (p.nivelo2 > 6 and p.nivelo2 < 10) and (p.transparencia > 30 and p.transparencia < 40):
             string_p_good += 1
-    return 'Leituras Boas: ' + str(string_p_good) + "\n" + 'Leituras Ruins: ' + str(string_p_bad)
+    return 'Leituras Boas: ' + str(string_p_good) + "\n / " + 'Leituras Ruins: ' + str(string_p_bad)
 
 @app.route('/relatorio/<dia>/<mes>/<ano>', methods=['GET', 'POST'])
 def relatoriodata(dia, mes, ano):
@@ -139,7 +139,27 @@ def relatoriodata(dia, mes, ano):
             string_p_bad += 1
         elif (p.temperatura < 28 and p.temperatura > 22) and (p.ph < 7 and p.ph > 6) and (p.dureza > 65 and p.dureza < 80) and (p.alcalinidade > 80 and p.alcalinidade < 100) and (p.nivelo2 > 6 and p.nivelo2 < 10) and (p.transparencia > 30 and p.transparencia < 40):
             string_p_good += 1
-    return 'Leituras Boas: ' + str(string_p_good) + "\n" + 'Leituras Ruins: ' + str(string_p_bad)
+    return 'Leituras Boas: ' + str(string_p_good) + "\n / " + 'Leituras Ruins: ' + str(string_p_bad)
+
+@app.route('/relatoriobd', methods=['GET', 'POST'])
+def relatoriobd():
+    peixe = Peixe.all()
+    string_p = ""
+    for p in peixe:
+        string_p = string_p + "Data: " + str(p.data) + " / Temperatura: " + str(p.temperatura) + " / Ph: " + str(p.ph) + " / Dureza: " + str(p.dureza) + " / Alcalinidade: " + str(p.alcalinidade) + " / NivelO2: " + str(p.nivelo2) + " / Transparencia: " + str(p.transparencia) + "\r\n"
+    return string_p
+
+@app.route('/relatoriobd/<dia>/<mes>/<ano>', methods=['GET', 'POST'])
+def relatoriobddata(dia, mes, ano):
+    data = datetime.datetime(int(ano),int(mes),int(dia),0,0,0)
+    peixe = Peixe.all()
+    peixe.filter('data >=', data)
+    data += datetime.timedelta(days=1)
+    peixe.filter('data <', data)
+    string_p = ""
+    for p in peixe:
+        string_p = string_p + "Data: " + str(p.data) + " / Temperatura: " + str(p.temperatura) + " / Ph: " + str(p.ph) + " / Dureza: " + str(p.dureza) + " / Alcalinidade: " + str(p.alcalinidade) + " / NivelO2: " + str(p.nivelo2) + " / Transparencia: " + str(p.transparencia) + "\r\n"
+    return string_p
 
 if __name__ == '__main__':
     app.run()
