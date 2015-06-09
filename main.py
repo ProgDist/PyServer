@@ -6,12 +6,15 @@ import datetime
 
 app = Flask(__name__)
 
+enviar_email = 0
+
 @app.route('/')
 def hello_world():
     return 'Hello World!'
 
 @app.route('/dados', methods=['GET', 'POST'])
 def dados():
+    global enviar_email
     if request.method == 'POST':
         p = Peixe(
             temperatura = int(request.form.get('temperatura')),
@@ -23,19 +26,22 @@ def dados():
         )
         p.put()
         if (p.temperatura > 28 or p.temperatura < 22) or (p.ph > 7 or p.ph < 6) or (p.dureza < 65 or p.dureza > 80) or (p.alcalinidade < 80 or p.alcalinidade > 100) or (p.nivelo2 < 6 or p.nivelo2 > 10) or (p.transparencia < 30 or p.transparencia > 40):
-            string_email = 'Leitura dos Sensores!'
-            string_email = string_email + '\nTemperatura: ' + request.form.get('temperatura')
-            string_email = string_email + '\nPh: ' + request.form.get('ph')
-            string_email = string_email + '\nDureza: ' + request.form.get('dureza')
-            string_email = string_email + '\nAlcalinidade: ' + request.form.get('alcalinidade')
-            string_email = string_email + '\nNivelO2: ' + request.form.get('nivelo2')
-            string_email = string_email + '\nTransparencia: ' + request.form.get('transparencia')
-            email_query = Email.all()
-            for e in email_query:
-                mail.send_mail("Peixe@premium-valor-94418.appspotmail.com",
-                           e.email,
-                          "Alerta - Niveis anormais nos sensores!",
-                            string_email)
+            enviar_email += 1
+            if enviar_email > 10:
+                enviar_email = 0
+                string_email = 'Leitura dos Sensores!'
+                string_email = string_email + '\nTemperatura: ' + request.form.get('temperatura')
+                string_email = string_email + '\nPh: ' + request.form.get('ph')
+                string_email = string_email + '\nDureza: ' + request.form.get('dureza')
+                string_email = string_email + '\nAlcalinidade: ' + request.form.get('alcalinidade')
+                string_email = string_email + '\nNivelO2: ' + request.form.get('nivelo2')
+                string_email = string_email + '\nTransparencia: ' + request.form.get('transparencia')
+                email_query = Email.all()
+                for e in email_query:
+                    mail.send_mail("Peixe@premium-valor-94418.appspotmail.com",
+                               e.email,
+                              "Alerta - Niveis anormais nos sensores!",
+                                string_email)
     if request.method == 'GET':
         p = Peixe(
             temperatura = int(request.args.get('temperatura')),
@@ -47,19 +53,22 @@ def dados():
         )
         p.put()
         if (p.temperatura > 28 or p.temperatura < 22) or (p.ph > 7 or p.ph < 6) or (p.dureza < 65 or p.dureza > 80) or (p.alcalinidade < 80 or p.alcalinidade > 100) or (p.nivelo2 < 6 or p.nivelo2 > 10) or (p.transparencia < 30 or p.transparencia > 40):
-            string_email = 'Leitura dos Sensores!'
-            string_email = string_email + '\nTemperatura: ' + request.args.get('temperatura')
-            string_email = string_email + '\nPh: ' + request.args.get('ph')
-            string_email = string_email + '\nDureza: ' + request.args.get('dureza')
-            string_email = string_email + '\nAlcalinidade: ' + request.args.get('alcalinidade')
-            string_email = string_email + '\nNivelO2: ' + request.args.get('nivelo2')
-            string_email = string_email + '\nTransparencia: ' + request.args.get('transparencia')
-            email_query = Email.all()
-            for e in email_query:
-                mail.send_mail("Peixe@premium-valor-94418.appspotmail.com",
-                           e.email,
-                           "Alerta - Niveis anormais nos sensores!",
-                            string_email)
+            enviar_email += 1
+            if enviar_email > 10:
+                enviar_email = 0
+                string_email = 'Leitura dos Sensores!'
+                string_email = string_email + '\nTemperatura: ' + request.args.get('temperatura')
+                string_email = string_email + '\nPh: ' + request.args.get('ph')
+                string_email = string_email + '\nDureza: ' + request.args.get('dureza')
+                string_email = string_email + '\nAlcalinidade: ' + request.args.get('alcalinidade')
+                string_email = string_email + '\nNivelO2: ' + request.args.get('nivelo2')
+                string_email = string_email + '\nTransparencia: ' + request.args.get('transparencia')
+                email_query = Email.all()
+                for e in email_query:
+                    mail.send_mail("Peixe@premium-valor-94418.appspotmail.com",
+                               e.email,
+                               "Alerta - Niveis anormais nos sensores!",
+                                string_email)
     return 'ok'
 
 @app.route('/subscribe', methods=['GET', 'POST'])
